@@ -1,0 +1,20 @@
+FROM golang:1.22.6-bookworm AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN go build -o /app/migrator ./cmd/migrator
+
+FROM alpine:3.18.3
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /app/migrator .
+COPY cmd/migrator/migrations /app/migrations
+
+ENTRYPOINT ["/app/migrator"]

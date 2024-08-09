@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS flats_house_id_idx;
